@@ -21,7 +21,7 @@ nvidia-smi
 docker run --rm --gpus all nvidia/cuda:12.9.0-base-ubuntu22.04 nvidia-smi
 ```
 
-The last checked state of `192.168.0.111` did not pass this: `nvidia-smi`, `/dev/nvidia*`, and the NVIDIA container runtime were missing. The compose file fails closed instead of starting Ollama on CPU.
+The checked `192.168.0.111` host passes this after installing the NVIDIA driver and NVIDIA Container Toolkit. The compose file fails closed instead of starting Ollama on CPU.
 
 ## Start
 
@@ -33,11 +33,13 @@ docker compose logs --tail=100 qwen-pull
 docker compose logs --tail=100 qwen-hybrid-smoke
 ```
 
-The API is bound to localhost only:
+The API is bound to the LAN address of the `111` server:
 
 ```text
-http://127.0.0.1:11434
+http://192.168.0.111:11434
 ```
+
+Ollama does not provide authentication here, so keep this address on a trusted LAN only.
 
 ## Verify
 
@@ -47,9 +49,9 @@ Manual checks:
 
 ```bash
 docker exec qwen-ollama ollama ps
-curl http://localhost:11434/api/tags
+curl http://192.168.0.111:11434/api/tags
 
-curl http://localhost:11434/v1/chat/completions \
+curl http://192.168.0.111:11434/v1/chat/completions \
   -H 'Content-Type: application/json' \
   -d '{
     "model": "qwen3:30b",
